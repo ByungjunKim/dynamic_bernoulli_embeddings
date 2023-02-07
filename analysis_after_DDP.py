@@ -31,7 +31,7 @@ def analysis(path, dataset_dict, **kwargs):
     embeddings = model.get_embeddings()
     emb = DynamicEmbeddingAnalysis(embeddings, dataset_dict['data_class'].dictionary)
     emb.absolute_drift()  # Terms that changed between the first and last timesteps
-    emb.neighborhood("climate", t)  # [input t!] Find nearby terms for "climate" at time `t`
+    emb.neighborhood("climate", 0)  # [input t!] Find nearby terms for "climate" at time `t`
     emb.change_points()
 
 if __name__ == "__main__":
