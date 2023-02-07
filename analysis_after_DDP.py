@@ -34,6 +34,10 @@ def analysis(path, dataset_dict, **kwargs):
     emb.neighborhood("climate", 0)  # [input t!] Find nearby terms for "climate" at time `t`
     emb.change_points()
 
+    # save
+    with open('checkpoint/emb.pkl', 'wb') as f:
+        pickle.dump(emb, f, protocol=pickle.HIGHEST_PROTOCOL)
+
 if __name__ == "__main__":
     # fetch args
     parser = argparse.ArgumentParser()
