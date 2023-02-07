@@ -22,7 +22,7 @@ class Data:
     """
 
     def __init__(
-        self, df, dictionary, device, time_col="time", bow_col="bow", m=100, cs=6
+        self, df, dictionary, time_col="time", bow_col="bow", m=100, cs=6
     ):
         """
         Parameters
@@ -31,8 +31,6 @@ class Data:
             Pandas dataframe with at least two columns
         dictionary : dict
             Dictionary to use when generating indices from the token bag of words.
-        device : `torch.device`
-            Where to send the tensors for the batch.
         time_col : str
             Name of column corresponding to time buckets. Expected to be integers from
             0 ... T where T is the total number of time buckets.
@@ -46,7 +44,6 @@ class Data:
         self.cs = cs
         self.dictionary = dictionary
         self.N = df.shape[0]
-        self.device = device
         self.ctx = None
 
         # Generate bow with token indices and remove all unknown words.
@@ -63,7 +60,7 @@ class Data:
         total = scaled_tfs.sum()
         self.unigram_logits = torch.tensor(
             [np.log(cnt / (total - cnt)) for cnt in scaled_tfs]
-        ).to(device)
+        )
 
         # Token counts per timestep.
         df_idx = pd.DataFrame({"time": df[time_col], "bow": bow_filtered})
@@ -74,9 +71,10 @@ class Data:
         self.m_t = m_t
         self.T = len(m_t)
         self.df_idx = df_idx
+        self.m = m
 
-    def __len__(self):
-        return self.N
+        # EDIT
+        self.make_items()
 
     def _context_mask(self, N):
         """Generates a mask to be used for fetching context vectors
@@ -85,7 +83,7 @@ class Data:
         ----------
         N : int
             The length of the sequence
-            
+
         Returns
         -------
         ctx : `numpy.ndarray`
@@ -108,27 +106,8 @@ class Data:
         oob = (ctx > N) | (ctx < 0)
         return ctx, oob
 
-    def epoch(self, m):
-        """Generator over batches of the data
+    def make_items(self):
 
-        Parameters
-        ----------
-        m : int
-            Minibatch fractions. This means that there will be `m` total minibatches,
-            each with 1/`m` from each time partition.
-
-        Yields
-        ------
-        targets : `numpy.ndarray`
-            An array of word indices indicating the targets with shape (N,).
-        contexts : `numpy.ndarray`
-            An array of word indices indicating the contexts with shape
-            (N, context size * 2). This will contain -1's which indicate out of bounds
-            and should be handled downstream.
-        times : `numpy.ndarray`
-            An array indicating the time slices that each of the targets belongs to.
-            Shape (N,).
-        """
         # Build separate generators for each of the time slices.
         token_generators = {}
         for t, group in self.df_idx.groupby("time"):
@@ -137,36 +116,46 @@ class Data:
                 for _, row in group.sample(group.shape[0]).iterrows()
                 for word in row.bow
             )
-
-        # Build each batch by iterating over each time slice and appending the required
-        # number of targets.
-        while True:
-            batch_targets = []
-            batch_contexts = []
-            batch_times = []
+        self.batch_targets = []
+        self.batch_contexts = []
+        self.batch_times = []
+        for _ in range(self.m):
             for t, token_gen in token_generators.items():
                 targets = []
                 for word in token_gen:
                     targets.append(word)
                     # +1 to avoid a very small final batch due to rounding
-                    if len(targets) == self.m_t[t] // m + 1:
+                    if len(targets) == self.m_t[t] // self.m + 1:
                         break
                 targets = np.array(targets)
                 if len(targets) == 0:
+                    self.batch_targets = np.concatenate(self.batch_targets)
+                    self.batch_contexts = np.concatenate(self.batch_contexts)
+                    self.batch_times = np.concatenate(self.batch_times)
                     return  # We've reached the end.
                 mask, oob = self._context_mask(len(targets))
                 # Use mode="clip" with np.take so that the oob indices don't cause a
                 # failure. Set the oob word indices to -1.
                 contexts = np.take(targets, mask, mode="clip")
                 contexts[oob] = -1
-                batch_targets.append(targets)
-                batch_contexts.append(contexts)
-                batch_times.append(np.repeat(t, len(targets)))
-            batch_targets = np.concatenate(batch_targets)
-            batch_contexts = np.concatenate(batch_contexts)
-            batch_times = np.concatenate(batch_times)
-            yield (
-                torch.tensor(batch_targets).to(self.device),
-                torch.tensor(batch_contexts).to(self.device),
-                torch.tensor(batch_times).to(self.device),
-            )
+                self.batch_targets.append(targets)
+                self.batch_contexts.append(contexts)
+                self.batch_times.append(np.repeat(t, len(targets)))
+        self.batch_targets = np.concatenate(self.batch_targets)
+        self.batch_contexts = np.concatenate(self.batch_contexts)
+        self.batch_times = np.concatenate(self.batch_times)
+
+
+class DBEDataloader(torch.utils.data.Dataset):
+    def __init__(self, data):
+        self.N = data.N
+        self.batch_targets = torch.from_numpy(data.batch_targets).cuda()
+        self.batch_contexts = torch.from_numpy(data.batch_contexts).cuda()
+        self.batch_times = torch.from_numpy(data.batch_times).cuda()
+
+    def __len__(self):
+        return self.N
+
+    def __getitem__(self, idx):
+        return (self.batch_targets[idx], self.batch_contexts[idx], self.batch_times[idx])
+
