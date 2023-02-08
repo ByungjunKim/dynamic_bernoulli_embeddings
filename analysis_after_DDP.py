@@ -30,9 +30,9 @@ def analysis(path, dataset_dict, **kwargs):
     # analysis
     embeddings = model.get_embeddings()
     emb = DynamicEmbeddingAnalysis(embeddings, dataset_dict['data_class'].dictionary)
-    emb.absolute_drift()  # Terms that changed between the first and last timesteps
-    emb.neighborhood("climate", 0)  # [input t!] Find nearby terms for "climate" at time `t`
-    emb.change_points()
+    # emb.absolute_drift()  # Terms that changed between the first and last timesteps
+    # emb.neighborhood("climate", 0)  # [input t!] Find nearby terms for "climate" at time `t`
+    # emb.change_points()
 
     # save
     with open('checkpoint/emb.pkl', 'wb') as f:
