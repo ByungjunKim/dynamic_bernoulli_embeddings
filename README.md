@@ -18,7 +18,7 @@ Quick Start
 Install with:
 
 ```
-pip install git+git://github.com/llefebure/dynamic_bernoulli_embeddings.git
+pip install git+https://github.com/llefebure/dynamic_bernoulli_embeddings.git
 ```
 
 The train_model function expects a pandas data frame with at least two columns, `bow` and `time`. `bow` is just a list of words in the document, and `time` is expected to be an integer in `[0, T)` where `T` is the total number of timesteps. It also expects a dictionary mapping tokens to their index in `[0, V)` where `V` is the size of the vocabulary. Any token found in the dataset but not in the vocabulary is ignored.
