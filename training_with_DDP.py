@@ -6,6 +6,9 @@ tqdm.pandas()
 from gensim.corpora import Dictionary
 from nltk import word_tokenize as nltk_word_tokenize
 
+import gc
+gc.collect()
+
 # Distributed Data Parallel
 import torch.distributed as dist
 import torch.multiprocessing as mp

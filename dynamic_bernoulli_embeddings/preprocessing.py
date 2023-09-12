@@ -22,7 +22,7 @@ class Data:
     """
 
     def __init__(
-        self, df, dictionary, time_col="time", bow_col="bow", m=100, cs=6
+        self, df, dictionary, time_col="time", bow_col="bow", m=100, cs=5 #6
     ):
         """
         Parameters
