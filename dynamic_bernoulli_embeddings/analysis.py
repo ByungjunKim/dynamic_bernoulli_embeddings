@@ -4,10 +4,11 @@ import numpy as np
 class DynamicEmbeddingAnalysis:
     """A class for performing analysis on the trained embeddings"""
 
-    def __init__(self, embeddings, dictionary):
+    def __init__(self, embeddings, dictionary, words_in_periods=None):
         self.embeddings = embeddings
         self.token_to_id = dictionary
         self.id_to_token = {v: k for k, v in dictionary.items()}
+        self.words_in_periods = words_in_periods  # 시기별 등장 단어 집합의 리스트
 
     def neighborhood(self, v, t, n=20, sign=False, index=False):
         """Finds the neighborhood of terms around `v` in timestep `t`"""
@@ -26,7 +27,11 @@ class DynamicEmbeddingAnalysis:
         if index:
             return ordered_sim[:n]
         else:
+<<<<<<< HEAD
 #             return [self.id_to_token[i] for i in ordered_sim[:n]]
+=======
+            # return [self.id_to_token[i] for i in ordered_sim[:n]]
+>>>>>>> bab6c87 (update)
             return [(self.id_to_token[i],j) for i,j in zip(ordered_sim[:n], sim[ordered_sim][:n])]
 
     def absolute_drift(self, n=50):

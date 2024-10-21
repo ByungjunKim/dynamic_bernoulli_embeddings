@@ -12,7 +12,7 @@ def train_model(
     dictionary,
     validation=None,
     notebook=True,
-    m=300,
+    m=100,
     num_epochs=10,
     lr=2e-3,
     validate_after=100,

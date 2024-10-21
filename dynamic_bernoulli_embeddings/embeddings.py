@@ -13,7 +13,7 @@ class DynamicBernoulliEmbeddingModel(nn.Module):
         m_t,
         dictionary,
         sampling_distribution,
-        k=50,
+        k=300,
         lambda_=1e4,
         lambda_0=1,
         ns=20,
