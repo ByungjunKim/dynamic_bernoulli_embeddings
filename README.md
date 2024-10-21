@@ -11,19 +11,14 @@ To set up the testing environment with conda, use the following instructions:
 2. Set up the conda environment:
 
 ```
-
 conda config --set channel_priority flexible
-
 conda env create -f environment.yml
-
 ```
 
 3. Activate the recreated environment:
 
 ```
-
 conda activate DBE_DDP
-
 ```
 
 ### Key Scripts
