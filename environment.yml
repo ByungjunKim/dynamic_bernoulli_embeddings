@@ -60,6 +60,7 @@ dependencies:
   - decorator=5.1.1=pyhd8ed1ab_0
   - defusedxml=0.7.1=pyhd8ed1ab_0
   - entrypoints=0.4=pyhd8ed1ab_0
+  - et_xmlfile=1.1.0=pyhd8ed1ab_0
   - exceptiongroup=1.2.0=pyhd8ed1ab_2
   - executing=2.0.1=pyhd8ed1ab_0
   - fastparquet=2024.5.0=py39hf3d9206_1
@@ -207,6 +208,7 @@ dependencies:
   - numpy=1.26.4=py39h474f0d3_0
   - openh264=2.1.1=h780b84a_0
   - openjpeg=2.5.0=hfec8fc6_2
+  - openpyxl=3.1.5=py39h79730dd_1
   - openssl=3.3.2=hb9d3cd8_0
   - orc=2.0.1=h17fec99_1
   - overrides=7.7.0=pyhd8ed1ab_0
@@ -306,3 +308,5 @@ dependencies:
   - zstd=1.5.6=ha6fb4c9_0
   - pip:
       - git+https://github.com/ByungjunKim/dynamic_bernoulli_embeddings.git
+      - kiwipiepy==0.19.1
+      - kiwipiepy-model==0.19.0
