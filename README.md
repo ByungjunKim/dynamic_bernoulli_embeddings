@@ -1,44 +1,67 @@
-Dynamic Bernoulli Embeddings
-============================
+# Dynamic Bernoulli Embeddings
 
-A PyTorch implementation of Dynamic Bernoulli Embeddings [1] for training word embeddings that smoothly evolve over time.
+This repository is a fork of the original [dynamic_bernoulli_embeddings](https://github.com/ByungjunKim/dynamic_bernoulli_embeddings), enhanced to support PyTorch's Distributed Data Parallel (DDP) for efficient multi-GPU training, enabling faster processing of large datasets, with a focus on training and analyzing models using two key scripts: This repository has been tested with Python 3.9 (Conda), PyTorch 2.5.0, and Ubuntu 22.04.5.
 
-Introduction
-------------
+### Install with
 
-This is an easy to use, pip installable, PyTorch based implementation of Dynamic Bernoulli Embeddings [1]. The paper authors provide their implementation [here](https://github.com/mariru/dynamic_bernoulli_embeddings), but I found it a little difficult to use. For this reason as well as the opportunity to get some practice in PyTorch, I decided to implement my own version.
+To set up the testing environment with conda, use the following instructions:
 
-With this model, every term gets an embedding for every timestep -- `T * V` embeddings in all where `T` is the number of timesteps and `V` is the size of the vocabulary.
+Clone this repository
 
-Check out [this Kaggle kernel](https://www.kaggle.com/llefebure/dynamic-bernoulli-embeddings) for an end to end application of this model on an interesting dataset.
+Set up the conda environment:
 
-Quick Start
------------
+'''
 
-Install with:
+conda config --set channel_priority flexible
 
-```
-pip install git+https://github.com/llefebure/dynamic_bernoulli_embeddings.git
-```
+conda env create -f environment.yml
 
-The train_model function expects a pandas data frame with at least two columns, `bow` and `time`. `bow` is just a list of words in the document, and `time` is expected to be an integer in `[0, T)` where `T` is the total number of timesteps. It also expects a dictionary mapping tokens to their index in `[0, V)` where `V` is the size of the vocabulary. Any token found in the dataset but not in the vocabulary is ignored.
+'''
 
-```python
-from dynamic_bernoulli_embeddings.training import train_model
-model, loss_history = train_model(dataset, dictionary)
-embeddings = model.get_embeddings()  # Will be of shape (T, V, k) -- k is the embedding dimension
-```
+Activate the recreated environment:
 
-Once you have the embeddings, you can use the analysis class to do some analysis.
+'''
 
-```python
-from dynamic_bernoulli_embeddings.analysis import DynamicEmbeddingAnalysis
-emb = DynamicEmbeddingAnalysis(model.get_embeddings(), dictionary)
-emb.absolute_drift()  # Terms that changed between the first and last timesteps
-emb.neighborhood("climate", t)  # Find nearby terms for "climate" at time `t`
-emb.change_points()  # Find (term, time) pairs with the largest shift from the previous timestep
-```
+conda activate DBE_DDP
 
-References
-----------
-[1] [Dynamic Embeddings for Language Evolution](http://www.cs.columbia.edu/~blei/papers/RudolphBlei2018.pdf)
+'''
+
+Clone the repositiory:
+
+### Key Scripts
+
+1. **training_with_DDP.py**
+
+   This script is used to train the Dynamic Bernoulli Embeddings model. Before training, ensure that you have prepared the required data in the `data` folder:
+
+   - **Data Preparation**: Place a `data.pkl` file inside the `data` folder.
+   - **First Run**: The script will generate a dataset pickle file (`dataset.pkl`) during the initial run.
+   - **Training**: On the second run, the training process will begin using the prepared dataset.
+   - **Model Saving**: After training, the model will be saved to a designated file.
+
+2. **analysis_after_DDP.py**
+
+   This script is used to analyze the trained model:
+
+   - It loads the trained model file and generates embedding data for analysis.
+   - The resulting embeddings are saved as `checkpoint/emb.pkl` for further use.
+
+### How to Use
+
+1. **Install Dependencies**
+
+   Make sure to install all necessary dependencies:
+
+2. **Training the Model**
+
+   Run the `training_with_DDP.py` script to prepare and train the model:
+
+3. **Analyzing the Model**
+
+   Once training is complete, use the `analysis_after_DDP.py` script to generate the embedding file:
+
+### Folder Structure
+
+- `checkpoint/`: Stores the trained model files and generated embedding files (`emb.pkl`).
+- `data/`: Contains the required dataset (`data.pkl`).
+- `dynamic_bernoulli_embeddings/`: Source code for the embeddings model.
