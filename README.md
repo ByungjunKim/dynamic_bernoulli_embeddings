@@ -1,6 +1,6 @@
 # Dynamic Bernoulli Embeddings
 
-This repository is a fork of the original [dynamic_bernoulli_embeddings](https://github.com/ByungjunKim/dynamic_bernoulli_embeddings), enhanced to support PyTorch's Distributed Data Parallel (DDP) for efficient multi-GPU training, enabling faster processing of large datasets, with a focus on training and analyzing models using two key scripts: This repository has been tested with Python 3.9 (Conda), PyTorch 2.5.0, and Ubuntu 22.04.5.
+This repository is a fork of the original [dynamic_bernoulli_embeddings](https://github.com/llefebure/dynamic_bernoulli_embeddings), enhanced to support PyTorch's Distributed Data Parallel (DDP) for efficient multi-GPU training, enabling faster processing of large datasets, with a focus on training and analyzing models using two key scripts: This repository has been tested with Python 3.9 (Conda), PyTorch 2.5.0, and Ubuntu 22.04.5.
 
 ### Install with
 
