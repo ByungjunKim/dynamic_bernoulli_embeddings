@@ -6,27 +6,25 @@ This repository is a fork of the original [dynamic_bernoulli_embeddings](https:/
 
 To set up the testing environment with conda, use the following instructions:
 
-Clone this repository
+1. Clone this repository
 
-Set up the conda environment:
+2. Set up the conda environment:
 
-'''
+```
 
 conda config --set channel_priority flexible
 
 conda env create -f environment.yml
 
-'''
+```
 
-Activate the recreated environment:
+3. Activate the recreated environment:
 
-'''
+```
 
 conda activate DBE_DDP
 
-'''
-
-Clone the repositiory:
+```
 
 ### Key Scripts
 
