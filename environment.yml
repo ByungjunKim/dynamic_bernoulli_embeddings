@@ -1,4 +1,4 @@
-name: DBE_DDP2
+name: DBE_DDP
 channels:
   - nvidia
   - conda-forge
