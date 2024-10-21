@@ -27,11 +27,7 @@ class DynamicEmbeddingAnalysis:
         if index:
             return ordered_sim[:n]
         else:
-<<<<<<< HEAD
-#             return [self.id_to_token[i] for i in ordered_sim[:n]]
-=======
             # return [self.id_to_token[i] for i in ordered_sim[:n]]
->>>>>>> bab6c87 (update)
             return [(self.id_to_token[i],j) for i,j in zip(ordered_sim[:n], sim[ordered_sim][:n])]
 
     def absolute_drift(self, n=50):
